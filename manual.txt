@@ -1,0 +1,40 @@
+module : eBestAPI, stock
+
+로그인	eBestAPI.login('id','비번','공인비번')
+serverConnector라는 변수로 유형이 XA_Session.XASession인 LoginEvent를 정의한다
+LoginEvent는 정의시 queryState가 0이다
+XA_Session.XASession.ConnectServer = 서버와 연결하기 - 성공하면 True 반환
+XA_Session.XASession.Login 로그인하기 - 성공하면 True를 반환, OnLogin를 받음
+
+Query 받기
+XA_DataSet.XAQuery유형으로 QueryEvent를 정의한다
+정의시 queryState가 0이다
+OnReceiveData이벤트가 뜨면 queryState = 1이 된다
+이때 OnReceiveMessage 이벤트를 받는데 메시지 내용이 조회완료가 아니면
+queryState = 2가 되고 에러 메시지를 반환한다
+
+기간별주가 (주기 1초)
+t1305 : eBestAPI.getPastData(code,period)
+[date, popen, close, high, low, volume, chdegree, changerate]
+
+업데이트하기 update.py
+eBestAPI.getGroupData(codelist)로 현재가 50개씩 가져온다
+stock.getVertical(data,num)으로 리스트의 특정 index를 추출한 리스트를 만들 수 있다.
+
+현재시간	eBestAPI.showTime()
+
+파일읽기	stock.fileRead('경로')
+파일쓰기 	stock.fileWrite(filename,data)
+csv해석	stock.csvRead('내용')
+
+
+
+부하TR은 10분 내 200회 요청 가능 (분당20, 3초당 1개)
+요청 초과시 rate 5배로 늘어난다
+동일 ID는 최대 3회 동시접속 가능
+
+문제상황 : -23 TR에 대한 정보를 찾을 수 없습니다.
+로그인을 안한 경우에 발생한다.
+
+문제상황 : getInformation.py에서 입력조건을 확인하세요 오류
+조회기간이 조회가능기간보다 길어서 발생하는 문제인데 데이터리턴 없으므로 예외처리
